@@ -1,0 +1,8 @@
+FROM centos:8
+
+ENV http_proxy http://proxy-chain.intel.com:911
+ENV https_proxy http://proxy-chain.intel.com:912
+
+
+RUN dnf update -y
+RUN yum install git cmake clang make -y
