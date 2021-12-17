@@ -111,6 +111,15 @@ if (HEXL_SHARED_LIB)
             PUBLIC $<BUILD_INTERFACE:$<TARGET_PROPERTY:easyloggingpp,INCLUDE_DIRECTORIES>>
         )
     endif()
+
+    if (HEXL_FPGA)
+        target_link_libraries(hexl PUBLIC hexl-fpga::hexl-fpga)
+        get_target_property(
+            FPGA_INCLUDE_DIR
+            hexl-fpga::hexl-fpga
+            INTERFACE_INCLUDE_DIRECTORIES)
+        target_include_directories(hexl PUBLIC ${FPGA_INCLUDE_DIR})
+    endif()
 else ()
     # For static library, if the dependencies are not found on the system,
     # we manually add the dependencies for Intel HEXL in the exported library.
@@ -137,6 +146,11 @@ else ()
     # Manually add cpu_features include directory
     target_include_directories(hexl
       PRIVATE $<TARGET_PROPERTY:cpu_features,INTERFACE_INCLUDE_DIRECTORIES>)
+
+    if (HEXL_FPGA)
+        add_dependencies(hexl hexl-fpga)
+        target_link_libraries(hexl PUBLIC hexl-fpga)
+    endif()
 endif()
 
 install(TARGETS hexl DESTINATION ${CMAKE_INSTALL_LIBDIR})

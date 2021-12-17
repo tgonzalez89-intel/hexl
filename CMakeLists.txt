@@ -3,7 +3,7 @@
 
 # target_link_options and cmake -S . -B build require cmake 3.13
 cmake_minimum_required(VERSION 3.13)
-project(HEXL VERSION 1.2.2 LANGUAGES C CXX)
+project(HEXL VERSION 1.2.3 LANGUAGES C CXX)
 
 include(CheckCCompilerFlag)
 include(CheckCXXCompilerFlag)
@@ -76,6 +76,23 @@ message(STATUS "HEXL_TREAT_WARNING_AS_ERROR:   ${HEXL_TREAT_WARNING_AS_ERROR}")
 
 hexl_check_compiler_version()
 hexl_add_compiler_definition()
+
+option(HEXL_FPGA "Enable FPGA support" OFF)
+message(STATUS "HEXL_FPGA:                     ${HEXL_FPGA}")
+if (HEXL_FPGA)
+   set(OPENCL_ROOT_PATH $ENV{INTELFPGAOCLSDKROOT})
+   message(STATUS "CMAKE_PREFIX_PATH:           ${CMAKE_PREFIX_PATH}")
+   find_package(hexl-fpga 1.0)
+   if (NOT TARGET hexl-fpga::hexl-fpga)
+       message(STATUS "Intel HEXL-FPGA: not found")
+       include(FetchContent)
+       message(STATUS "Intel HEXL-FPGA: download ...")
+       include(cmake/ExternalHEXLFPGA.cmake)
+   else()
+       add_library(hexl-fpga ALIAS hexl-fpga::hexl-fpga)
+       message(STATUS "Intel HEXL-FPGA: found")
+   endif()
+endif()
 
 if (HEXL_COVERAGE)
   if (NOT HEXL_USE_GNU)
