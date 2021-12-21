@@ -21,6 +21,3 @@
 #include "hexl/util/defines.hpp"
 #include "hexl/util/types.hpp"
 #include "hexl/util/util.hpp"
-#ifdef HEXL_FPGA
-#include "hexl-fpga.h"
-#endif
