@@ -1,6 +1,6 @@
 FetchContent_Declare(
     hexl-fpga
-    GIT_REPOSITORY https://github.com/tgonzalez89-intel/hexl.git
+    GIT_REPOSITORY https://github.com/tgonzalez89-intel/hexl-fpga.git
     GIT_TAG hexl-fpga-integration
 )
 FetchContent_GetProperties(hexl-fpga)
