@@ -74,6 +74,17 @@ if(CpuFeatures_FOUND)
     target_include_directories(hexl PUBLIC ${CpuFeatures_INCLUDE_DIR}) # Public headers
 endif()
 
+if (HEXL_FPGA)
+    add_dependencies(hexl hexl-fpga)
+    target_link_libraries(hexl PUBLIC hexl-fpga)
+    get_target_property(
+        FPGA_INCLUDE_DIR
+        hexl-fpga
+        INTERFACE_INCLUDE_DIRECTORIES
+    )
+    target_include_directories(hexl PRIVATE $<BUILD_INTERFACE:${FPGA_INCLUDE_DIR}>)
+endif()
+
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(hexl PRIVATE -Wall -Wconversion -Wshadow -pedantic -Wextra
         -Wno-unknown-pragmas -march=native -O3 -fomit-frame-pointer
@@ -85,6 +96,11 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         -Wno-unknown-warning
         -Wno-unknown-warning-option
     )
+    # Extra compilation options when building for FPGA
+    if (HEXL_FPGA)
+        target_compile_options(hexl PRIVATE -fPIE -fPIC -pie -fstack-protector -Wformat -Wformat-security)
+        target_compile_options(hexl PRIVATE -z noexecstack -Wl,-z,relro,-z,now -Wl,-Bsymbolic)
+    endif()
 
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     # Inlining causes some tests to fail on MSVC with AVX512 in Release mode, HEXL_DEBUG=OFF,
@@ -110,6 +126,10 @@ if (HEXL_SHARED_LIB)
         target_include_directories(hexl
             PUBLIC $<BUILD_INTERFACE:$<TARGET_PROPERTY:easyloggingpp,INCLUDE_DIRECTORIES>>
         )
+    endif()
+    if (HEXL_FPGA)
+        target_link_libraries(hexl PUBLIC ${OPENCL_ROOT_PATH}/linux64/lib/libOpenCL.so)
+        target_link_libraries(hexl PUBLIC rt pthread)
     endif()
 else ()
     # For static library, if the dependencies are not found on the system,

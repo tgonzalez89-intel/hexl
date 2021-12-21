@@ -11,13 +11,32 @@
 #include "hexl/util/aligned-allocator.hpp"
 #include "hexl/util/check.hpp"
 #include "util/cpu-features.hpp"
+#ifdef HEXL_FPGA
+#include "hexl-fpga.h"
+#endif
 
 namespace intel {
 namespace hexl {
 
+#ifdef HEXL_FPGA
+static bool get_fpga_enable_dyadic_multiply() {
+  char * env = getenv("FPGA_ENABLE_DYADIC_MULTIPLY");
+  bool status = env ? atoi(env) : true;
+  return status;
+}
+static bool g_fpga_enable_dyadic_multiply = get_fpga_enable_dyadic_multiply();
+#endif
+
 void CkksMultiply(uint64_t* result, const uint64_t* operand1,
                   const uint64_t* operand2, uint64_t n, const uint64_t* moduli,
                   uint64_t num_moduli) {
+#ifdef HEXL_FPGA
+  if (g_fpga_enable_dyadic_multiply) {
+    intel::hexl::DyadicMultiply(result, operand1, operand2, n, moduli, num_moduli);
+    return;
+  }
+#endif
+
   HEXL_CHECK(result != nullptr, "Require result != nullptr");
   HEXL_CHECK(operand1 != nullptr, "Require operand1 != nullptr");
   HEXL_CHECK(operand2 != nullptr, "Require operand2 != nullptr");

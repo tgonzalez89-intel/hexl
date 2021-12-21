@@ -11,6 +11,11 @@
 
 @PACKAGE_INIT@
 
+if(HEXL_FPGA)
+    include(CMakeFindDependencyMacro)
+    find_dependency(hexl-fpga)
+endif()
+
 include(CMakeFindDependencyMacro)
 find_package(CpuFeatures CONFIG)
 if(NOT CpuFeatures_FOUND)

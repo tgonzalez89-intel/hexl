@@ -4,8 +4,12 @@
 #include <cstdint>
 #include <iostream>
 #include <vector>
+#include <random>
 
 #include "hexl/hexl.hpp"
+#ifdef HEXL_FPGA
+#include "hexl-fpga.h"
+#endif
 
 bool CheckEqual(const std::vector<uint64_t>& x,
                 const std::vector<uint64_t>& y) {
@@ -143,6 +147,35 @@ void ExampleReduceMod() {
   std::cout << "Done running ExampleReduceMod\n";
 }
 
+void ExampleNTT_16384() {
+  std::cout << "Running ExampleNTT_16384_FPGA...\n";
+
+  uint64_t N = 16384;
+  std::vector<uint64_t> modulus = {136511489, 150110209, 137297921,
+                                   162103297, 144900097, 145063937};
+
+  std::random_device rd;
+  std::mt19937 gen(rd());
+
+  for (size_t k = 0; k < modulus.size(); k++) {
+    uint64_t coeff_modulus = modulus[k];
+    std::uniform_int_distribution<uint64_t> distrib(0, coeff_modulus - 1);
+
+    std::vector<uint64_t> input(N, 0);
+    for (size_t i = 0; i < N; ++i) input[i] = distrib(gen);
+    auto exp_out = input;
+
+    intel::hexl::NTT ntt(N, coeff_modulus);
+
+    ntt.ComputeForward(input.data(), input.data(), 1, 1);
+    ntt.ComputeInverse(input.data(), input.data(), 1, 1);
+
+    CheckEqual(input, exp_out);
+  }
+
+  std::cout << "Done running ExampleNTT_16384_FPGA\n";
+}
+
 int main() {
   ExampleEltwiseVectorVectorAddMod();
   ExampleEltwiseVectorScalarAddMod();
@@ -152,6 +185,13 @@ int main() {
   ExampleEltwiseMultMod();
   ExampleNTT();
   ExampleReduceMod();
+#ifdef HEXL_FPGA
+  intel::hexl::acquire_FPGA_resources();
+#endif
+  ExampleNTT_16384();
+#ifdef HEXL_FPGA
+  intel::hexl::release_FPGA_resources();
+#endif
 
   return 0;
 }

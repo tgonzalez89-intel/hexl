@@ -15,9 +15,28 @@
 #include "ntt/fwd-ntt-avx512.hpp"
 #include "ntt/inv-ntt-avx512.hpp"
 #include "util/cpu-features.hpp"
+#ifdef HEXL_FPGA
+#include "hexl-fpga.h"
+#endif
 
 namespace intel {
 namespace hexl {
+
+#ifdef HEXL_FPGA
+static bool get_fpga_enable_ntt() {
+  char * env = getenv("FPGA_ENABLE_NTT");
+  bool status = env ? atoi(env) : true;
+  return status;
+}
+static bool g_fpga_enable_ntt = get_fpga_enable_ntt();
+
+static bool get_fpga_enable_intt() {
+  char * env = getenv("FPGA_ENABLE_INTT");
+  bool status = env ? atoi(env) : true;
+  return status;
+}
+static bool g_fpga_enable_intt = get_fpga_enable_intt();
+#endif
 
 AllocatorStrategyPtr mallocStrategy = AllocatorStrategyPtr(new MallocStrategy);
 
@@ -199,6 +218,18 @@ void NTT::ComputeForward(uint64_t* result, const uint64_t* operand,
       operand, m_degree, m_q * input_mod_factor,
       "value in operand exceeds bound " << m_q * input_mod_factor);
 
+#ifdef HEXL_FPGA
+  if (g_fpga_enable_ntt && m_degree == 16384) {
+    const uint64_t* root_of_unity_powers = GetRootOfUnityPowers().data();
+    const uint64_t* precon_root_of_unity_powers =
+        GetPrecon64RootOfUnityPowers().data();
+    intel::hexl::set_worksize_NTT(1);
+    intel::hexl::NTTFPGA(result, root_of_unity_powers,
+                         precon_root_of_unity_powers, m_q, m_degree);
+    return;
+  }
+#endif
+
 #ifdef HEXL_HAS_AVX512IFMA
   if (has_avx512ifma && (m_q < s_max_fwd_ifma_modulus && (m_degree >= 16))) {
     const uint64_t* root_of_unity_powers = GetAVX512RootOfUnityPowers().data();
@@ -260,6 +291,22 @@ void NTT::ComputeInverse(uint64_t* result, const uint64_t* operand,
              "output_mod_factor must be 1 or 2; got " << output_mod_factor);
   HEXL_CHECK_BOUNDS(operand, m_degree, m_q * input_mod_factor,
                     "operand exceeds bound " << m_q * input_mod_factor);
+
+#ifdef HEXL_FPGA
+  if (g_fpga_enable_intt && m_degree == 16384) {
+    const uint64_t* inv_root_of_unity_powers = GetInvRootOfUnityPowers().data();
+    const uint64_t* precon_inv_root_of_unity_powers =
+        GetPrecon64InvRootOfUnityPowers().data();
+    uint64_t inv_n = InverseMod(m_degree, m_q);
+    uint64_t W_op = inv_root_of_unity_powers[m_degree - 1];
+    uint64_t inv_n_w = MultiplyMod(inv_n, W_op, m_q);
+    intel::hexl::set_worksize_INTT(1);
+    intel::hexl::INTTFPGA(result, inv_root_of_unity_powers,
+                          precon_inv_root_of_unity_powers, m_q, inv_n, inv_n_w,
+                          m_degree);
+    return;
+  }
+#endif
 
 #ifdef HEXL_HAS_AVX512IFMA
   if (has_avx512ifma && (m_q < s_max_inv_ifma_modulus) && (m_degree >= 16)) {
