@@ -18,10 +18,4 @@ target_link_libraries(example PRIVATE HEXL::hexl)
 
 if(HEXL_FPGA)
     add_definitions(-DHEXL_FPGA)
-    add_custom_command(
-        TARGET example POST_BUILD
-        COMMAND rm -f hexl_fpga.aocx
-        COMMAND ln -s ${CMAKE_PREFIX_PATH}/fpga/hexl_fpga.aocx .
-        VERBATIM
-)
 endif()
