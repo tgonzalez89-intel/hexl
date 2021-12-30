@@ -10,3 +10,7 @@ cmake -S cmake -B build \
 -DHEXL_FPGA=ON
 
 cmake --build build
+
+cd build
+ln -s "$(realpath ${PWD}/../../../hexl-fpga/install/fpga/hexl_fpga.aocx)" .
+cd ..

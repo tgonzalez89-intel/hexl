@@ -6,3 +6,4 @@ export FPGA_ENABLE_INTT=1
 export FPGA_DEBUG=1
 cd build
 ./example
+cd ..
