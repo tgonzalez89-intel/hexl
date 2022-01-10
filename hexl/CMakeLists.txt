@@ -18,7 +18,9 @@ set(NATIVE_SRC
 if (HEXL_EXPERIMENTAL)
     list(APPEND NATIVE_SRC
         experimental/seal/ckks-multiply.cpp
+        experimental/seal/ckks-multiply-cpu.cpp
         experimental/seal/ckks-switch-key.cpp
+        experimental/seal/ckks-switch-key-cpu.cpp
         experimental/misc/lr-mat-vec-mult.cpp
     )
 endif()
