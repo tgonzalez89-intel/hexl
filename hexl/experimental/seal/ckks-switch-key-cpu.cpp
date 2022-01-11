@@ -28,6 +28,7 @@ void CkksSwitchKey(uint64_t* result, const uint64_t* t_target_iter_ptr,
                    uint64_t key_component_count, uint64_t* moduli,
                    const uint64_t** k_switch_keys,
                    uint64_t* modswitch_factors) {
+  uint64_t coeff_count = n;
 #ifdef HEXL_DUMP_JSON
   static int dump_flag = 0;
 
@@ -51,9 +52,9 @@ void CkksSwitchKey(uint64_t* result, const uint64_t* t_target_iter_ptr,
       "dump_flag = %d, n = %lu, decomp_modulus_size = %lu, key_modulus_size = "
       "%lu, rns_"
       "modulus_size = %lu, key_component_count = %lu\n",
-      dump_flag, n, decomp_modulus_size, key_modulus_size, rns_modulus_size,
+      dump_flag, coeff_count, decomp_modulus_size, key_modulus_size, rns_modulus_size,
       key_component_count);
-  js["coeff_count"] = n;
+  js["coeff_count"] = coeff_count;
   js["decomp_modulus_size"] = decomp_modulus_size;
   js["key_modulus_size"] = key_modulus_size;
   js["rns_modulus_size"] = rns_modulus_size;
@@ -86,8 +87,6 @@ void CkksSwitchKey(uint64_t* result, const uint64_t* t_target_iter_ptr,
     }
   }
 #endif
-
-  uint64_t coeff_count = n;
 
   // Create a copy of target_iter
   std::vector<uint64_t> t_target(coeff_count * decomp_modulus_size, 0);
