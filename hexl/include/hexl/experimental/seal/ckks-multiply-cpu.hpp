@@ -21,8 +21,8 @@ namespace cpu {
 /// coefficient moduli
 /// @param[in] num_moduli Number of word-sized coefficient moduli
 void DyadicMultiply(uint64_t* result, const uint64_t* operand1,
-                  const uint64_t* operand2, uint64_t n, const uint64_t* moduli,
-                  uint64_t num_moduli);
+                    const uint64_t* operand2, uint64_t n,
+                    const uint64_t* moduli, uint64_t num_moduli);
 
 }  // namespace cpu
 }  // namespace hexl

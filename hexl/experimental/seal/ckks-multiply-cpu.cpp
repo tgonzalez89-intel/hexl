@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "hexl/experimental/seal/ckks-multiply-cpu.hpp"
+
 #include "hexl/eltwise/eltwise-add-mod.hpp"
 #include "hexl/eltwise/eltwise-mult-mod.hpp"
 #include "hexl/number-theory/number-theory.hpp"
@@ -14,8 +15,8 @@ namespace hexl {
 namespace cpu {
 
 void DyadicMultiply(uint64_t* result, const uint64_t* operand1,
-                  const uint64_t* operand2, uint64_t n, const uint64_t* moduli,
-                  uint64_t num_moduli) {
+                    const uint64_t* operand2, uint64_t n,
+                    const uint64_t* moduli, uint64_t num_moduli) {
   HEXL_CHECK(result != nullptr, "Require result != nullptr");
   HEXL_CHECK(operand1 != nullptr, "Require operand1 != nullptr");
   HEXL_CHECK(operand2 != nullptr, "Require operand2 != nullptr");

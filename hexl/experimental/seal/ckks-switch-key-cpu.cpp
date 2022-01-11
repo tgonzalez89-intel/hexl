@@ -1,12 +1,13 @@
 // Copyright (C) 2020-2021 Intel Corporation
 // SPDX-License-Identifier: Apache-2.0
 
+#include "hexl/experimental/seal/ckks-switch-key-cpu.hpp"
+
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 
-#include "hexl/experimental/seal/ckks-switch-key-cpu.hpp"
 #include "hexl/eltwise/eltwise-add-mod.hpp"
 #include "hexl/eltwise/eltwise-fma-mod.hpp"
 #include "hexl/eltwise/eltwise-mult-mod.hpp"
@@ -16,8 +17,8 @@
 #include "hexl/number-theory/number-theory.hpp"
 #include "hexl/util/aligned-allocator.hpp"
 #include "hexl/util/check.hpp"
-#include "util/cpu-features.hpp"
 #include "json.hpp"
+#include "util/cpu-features.hpp"
 
 namespace intel {
 namespace hexl {
@@ -53,8 +54,8 @@ void CkksSwitchKey(uint64_t* result, const uint64_t* t_target_iter_ptr,
       "dump_flag = %d, n = %lu, decomp_modulus_size = %lu, key_modulus_size = "
       "%lu, rns_"
       "modulus_size = %lu, key_component_count = %lu\n",
-      dump_flag, coeff_count, decomp_modulus_size, key_modulus_size, rns_modulus_size,
-      key_component_count);
+      dump_flag, coeff_count, decomp_modulus_size, key_modulus_size,
+      rns_modulus_size, key_component_count);
   js["coeff_count"] = coeff_count;
   js["decomp_modulus_size"] = decomp_modulus_size;
   js["key_modulus_size"] = key_modulus_size;
