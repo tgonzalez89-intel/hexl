@@ -17,7 +17,7 @@
 #include "hexl/number-theory/number-theory.hpp"
 #include "hexl/util/aligned-allocator.hpp"
 #include "hexl/util/check.hpp"
-#include "json.hpp"
+#include "json.hh"
 #include "util/cpu-features.hpp"
 
 namespace intel {
