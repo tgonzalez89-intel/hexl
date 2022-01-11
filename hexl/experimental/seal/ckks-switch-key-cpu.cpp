@@ -1,10 +1,11 @@
 // Copyright (C) 2020-2021 Intel Corporation
 // SPDX-License-Identifier: Apache-2.0
 
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+
 #include "hexl/experimental/seal/ckks-switch-key-cpu.hpp"
-
-#include <cstring>
-
 #include "hexl/eltwise/eltwise-add-mod.hpp"
 #include "hexl/eltwise/eltwise-fma-mod.hpp"
 #include "hexl/eltwise/eltwise-mult-mod.hpp"
@@ -15,6 +16,7 @@
 #include "hexl/util/aligned-allocator.hpp"
 #include "hexl/util/check.hpp"
 #include "util/cpu-features.hpp"
+#include "json.hpp"
 
 namespace intel {
 namespace hexl {
@@ -26,6 +28,65 @@ void CkksSwitchKey(uint64_t* result, const uint64_t* t_target_iter_ptr,
                    uint64_t key_component_count, uint64_t* moduli,
                    const uint64_t** k_switch_keys,
                    uint64_t* modswitch_factors) {
+#ifdef HEXL_DUMP_JSON
+  static int dump_flag = 0;
+
+  std::string moduli_filename("moduli.txt");
+  std::ofstream file_out;
+  file_out.open(moduli_filename, std::ios_base::app);
+  file_out << "\n";
+  file_out << "Iteration " << dump_flag << ":\n";
+
+  std::cout << "n = " << n << ", modulus: ";
+  for (size_t i = 0; i < key_modulus_size; i++) {
+    std::cout << moduli[i] << ", ";
+    file_out << moduli[i] << std::endl;
+  }
+  std::cout << std::endl;
+  file_out.close();
+
+  nlohmann::json js;
+  nlohmann::json js_mod;
+  printf(
+      "dump_flag = %d, n = %lu, decomp_modulus_size = %lu, key_modulus_size = "
+      "%lu, rns_"
+      "modulus_size = %lu, key_component_count = %lu\n",
+      dump_flag, n, decomp_modulus_size, key_modulus_size, rns_modulus_size,
+      key_component_count);
+  js["coeff_count"] = n;
+  js["decomp_modulus_size"] = decomp_modulus_size;
+  js["key_modulus_size"] = key_modulus_size;
+  js["rns_modulus_size"] = rns_modulus_size;
+  js["key_component_count"] = key_component_count;
+  js_mod["key_modulus_size"] = key_modulus_size;
+  for (size_t i = 0; i < coeff_count * decomp_modulus_size; i++) {
+    js["t_target_iter_ptr"].push_back(t_target_iter_ptr[i]);
+  }
+
+  for (size_t i = 0; i < coeff_count * decomp_modulus_size; i++) {
+    js["input"].push_back(result[i]);
+    js["input"].push_back(result[i + coeff_count * decomp_modulus_size]);
+  }
+
+  for (size_t i = 0; i < key_modulus_size; i++) {
+    js["moduli"].push_back(moduli[i]);
+  }
+
+  for (size_t i = 0; i < key_modulus_size; i++) {
+    js_mod["moduli"].push_back(moduli[i]);
+  }
+
+  for (size_t i = 0; i < decomp_modulus_size; i++) {
+    js["modswitch_factors"].push_back(modswitch_factors[i]);
+  }
+
+  for (size_t i = 0; i < decomp_modulus_size; i++) {
+    for (size_t j = 0; j < 2 * key_modulus_size * n; j++) {
+      js["key_vector"][i].push_back(k_switch_keys[i][j]);
+    }
+  }
+#endif
+
   uint64_t coeff_count = n;
 
   // Create a copy of target_iter
@@ -74,9 +135,9 @@ void CkksSwitchKey(uint64_t* result, const uint64_t* t_target_iter_ptr,
           }
         } else {
           // Perform RNS conversion (modular reduction)
-          intel::hexl::EltwiseReduceMod(
-              t_ntt_ptr, &t_target_ptr[j * coeff_count], coeff_count,
-              moduli[key_index], moduli[key_index], 1);
+          intel::hexl::EltwiseReduceMod(t_ntt_ptr,
+                                        &t_target_ptr[j * coeff_count],
+                                        coeff_count, moduli[key_index], 0, 1);
         }
 
         // NTT conversion lazy outputs in [0, 4q)
@@ -134,7 +195,7 @@ void CkksSwitchKey(uint64_t* result, const uint64_t* t_target_iter_ptr,
         &t_poly_prod[key_component * coeff_count * rns_modulus_size];
     uint64_t* t_last = &t_poly_prod_it[decomp_modulus_size * coeff_count];
 
-    NTT(n, moduli[key_modulus_size - 1]).ComputeInverse(t_last, t_last, 2, 2);
+    NTT(n, moduli[key_modulus_size - 1]).ComputeInverse(t_last, t_last, 2, 1);
 
     uint64_t qk = moduli[key_modulus_size - 1];
     uint64_t qk_half = qk >> 1;
@@ -152,7 +213,7 @@ void CkksSwitchKey(uint64_t* result, const uint64_t* t_target_iter_ptr,
 
       // TODO(fboemer): Use input_mod_factor != 0 when qk / qi < 4
       // TODO(fboemer): Use output_mod_factor == 4?
-      uint64_t input_mod_factor = (qk > qi) ? moduli[i] : 2;
+      uint64_t input_mod_factor = (qk > qi) ? 0 : 2;
       if (qk > qi) {
         intel::hexl::EltwiseReduceMod(t_ntt_ptr, t_last, coeff_count, moduli[i],
                                       input_mod_factor, 1);
@@ -193,6 +254,31 @@ void CkksSwitchKey(uint64_t* result, const uint64_t* t_target_iter_ptr,
                                  moduli[i]);
     }
   }
+
+#ifdef HEXL_DUMP_JSON
+  for (size_t i = 0; i < coeff_count * decomp_modulus_size; i++) {
+    js["expected_output"].push_back(result[i]);
+    js["expected_output"].push_back(
+        result[i + coeff_count * decomp_modulus_size]);
+  }
+  std::ostringstream out_filename;
+  out_filename << n << "_";
+  out_filename << decomp_modulus_size << "_";
+  out_filename << key_modulus_size << "_";
+  out_filename << rns_modulus_size << "_";
+  out_filename << key_component_count << "_" << dump_flag << ".json";
+  printf("Saving to %s\n", out_filename.str().c_str());
+  std::ofstream o(out_filename.str());
+  o << std::setw(4) << js << std::endl;
+
+  std::ostringstream mod_filename;
+  mod_filename << n << "_";
+  mod_filename << key_modulus_size << ".json";
+  std::ofstream mod_o(mod_filename.str());
+  mod_o << std::setw(4) << js_mod << std::endl;
+  dump_flag++;
+#endif
+
   return;
 }
 

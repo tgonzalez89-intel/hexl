@@ -62,6 +62,7 @@ option(HEXL_SHARED_LIB "Generate a shared library" OFF)
 option(HEXL_TESTING "Enables unit-tests" ON)
 option(HEXL_TREAT_WARNING_AS_ERROR "Treat all compile-time warnings as errors" OFF)
 option(HEXL_CPU "Enable CPU implementation of certain features" ON)
+option(HEXL_DUMP_JSON "Enable dumping parameters of some functions" OFF)
 
 message(STATUS "CMAKE_BUILD_TYPE:              ${CMAKE_BUILD_TYPE}")
 message(STATUS "CMAKE_C_COMPILER:              ${CMAKE_C_COMPILER}")
@@ -75,9 +76,14 @@ message(STATUS "HEXL_SHARED_LIB:               ${HEXL_SHARED_LIB}")
 message(STATUS "HEXL_TESTING:                  ${HEXL_TESTING}")
 message(STATUS "HEXL_TREAT_WARNING_AS_ERROR:   ${HEXL_TREAT_WARNING_AS_ERROR}")
 message(STATUS "HEXL_CPU:                      ${HEXL_CPU}")
+message(STATUS "HEXL_DUMP_JSON:                ${HEXL_DUMP_JSON}")
 
 hexl_check_compiler_version()
 hexl_add_compiler_definition()
+
+if (HEXL_DUMP_JSON)
+  add_definitions(-DHEXL_DUMP_JSON)
+endif()
 
 if (HEXL_CPU)
   add_definitions(-DHEXL_CPU)

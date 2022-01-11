@@ -2,9 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "hexl/experimental/seal/ckks-multiply-cpu.hpp"
-
-#include <cstring>
-
 #include "hexl/eltwise/eltwise-add-mod.hpp"
 #include "hexl/eltwise/eltwise-mult-mod.hpp"
 #include "hexl/number-theory/number-theory.hpp"
