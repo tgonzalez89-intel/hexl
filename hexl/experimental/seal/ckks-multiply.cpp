@@ -8,10 +8,10 @@
 namespace intel {
 namespace hexl {
 
-void CkksMultiply(uint64_t* result, const uint64_t* operand1,
+void DyadicMultiply(uint64_t* result, const uint64_t* operand1,
                   const uint64_t* operand2, uint64_t n, const uint64_t* moduli,
                   uint64_t num_moduli) {
-  intel::hexl::cpu::CKKSMultiply(result, operand1, operand2, n, moduli,
+  intel::hexl::cpu::DyadicMultiply(result, operand1, operand2, n, moduli,
                                  num_moduli);
 }
 
