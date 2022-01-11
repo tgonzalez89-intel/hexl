@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 
 #include "hexl/experimental/seal/ckks-switch-key-cpu.hpp"
 #include "hexl/eltwise/eltwise-add-mod.hpp"
