@@ -79,7 +79,7 @@ void CkksSwitchKey(uint64_t* result, const uint64_t* t_target_iter_ptr,
     js_mod["moduli"].push_back(moduli[i]);
   }
 
-  for (size_t i = 0; i < decomp_modulus_size; i++) {
+  for (size_t i = 0; i < key_modulus_size; i++) {
     js["modswitch_factors"].push_back(modswitch_factors[i]);
   }
 
