@@ -262,12 +262,14 @@ void CkksSwitchKey(uint64_t* result, const uint64_t* t_target_iter_ptr,
     js["expected_output"].push_back(
         result[i + coeff_count * decomp_modulus_size]);
   }
-  for (size_t i = 0; i < key_modulus_size; ++i) {
-    for (size_t j = 0; j < n; ++j) {
-      js["inv_root_of_unity_powers"][i]         .push_back(root_of_unity_powers_ptr[i*n*4 + n*0 + j]);
-      js["precon64_inv_root_of_unity_powers"][i].push_back(root_of_unity_powers_ptr[i*n*4 + n*1 + j]);
-      js["root_of_unity_powers"][i]             .push_back(root_of_unity_powers_ptr[i*n*4 + n*2 + j]);
-      js["precon64_root_of_unity_powers"][i]    .push_back(root_of_unity_powers_ptr[i*n*4 + n*3 + j]);
+  if (root_of_unity_powers_ptr != nullptr) {
+    for (size_t i = 0; i < key_modulus_size; ++i) {
+      for (size_t j = 0; j < n; ++j) {
+        js["inv_root_of_unity_powers"][i]         .push_back(root_of_unity_powers_ptr[i*n*4 + n*0 + j]);
+        js["precon64_inv_root_of_unity_powers"][i].push_back(root_of_unity_powers_ptr[i*n*4 + n*1 + j]);
+        js["root_of_unity_powers"][i]             .push_back(root_of_unity_powers_ptr[i*n*4 + n*2 + j]);
+        js["precon64_root_of_unity_powers"][i]    .push_back(root_of_unity_powers_ptr[i*n*4 + n*3 + j]);
+      }
     }
   }
   std::ostringstream out_filename;
