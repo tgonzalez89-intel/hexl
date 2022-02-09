@@ -29,11 +29,11 @@ namespace cpu {
 /// coeff_count * ((key_modulus_size - 1)+ (key_component_count - 1) *
 /// (key_modulus_size) + 1) entries
 /// @param[in] modswitch_factors Array of modulus switch factors
-void CkksSwitchKey(uint64_t* result, const uint64_t* t_target_iter_ptr,
-                   uint64_t n, uint64_t decomp_modulus_size,
-                   uint64_t key_modulus_size, uint64_t rns_modulus_size,
-                   uint64_t key_component_count, uint64_t* moduli,
-                   const uint64_t** kswitch_keys, uint64_t* modswitch_factors);
+void KeySwitch(uint64_t* result, const uint64_t* t_target_iter_ptr, uint64_t n,
+               uint64_t decomp_modulus_size, uint64_t key_modulus_size,
+               uint64_t rns_modulus_size, uint64_t key_component_count,
+               uint64_t* moduli, const uint64_t** kswitch_keys,
+               uint64_t* modswitch_factors);
 
 }  // namespace cpu
 }  // namespace hexl
