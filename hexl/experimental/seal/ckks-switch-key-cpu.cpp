@@ -27,9 +27,13 @@ namespace cpu {
 void KeySwitch(uint64_t* result, const uint64_t* t_target_iter_ptr, uint64_t n,
                uint64_t decomp_modulus_size, uint64_t key_modulus_size,
                uint64_t rns_modulus_size, uint64_t key_component_count,
-               uint64_t* moduli, const uint64_t** k_switch_keys,
-               uint64_t* modswitch_factors,
-               uint64_t* root_of_unity_powers_ptr) {
+               const uint64_t* moduli, const uint64_t** k_switch_keys,
+               const uint64_t* modswitch_factors,
+               const uint64_t* root_of_unity_powers_ptr) {
+  if (root_of_unity_powers_ptr != nullptr) {
+    std::cout << "Passing root_of_unity_powers_ptr as a parameter is not supported yet.\n";
+    assert(root_of_unity_powers_ptr == nullptr);
+  }
   uint64_t coeff_count = n;
 #ifdef HEXL_DUMP_JSON
   static int dump_flag = 0;
