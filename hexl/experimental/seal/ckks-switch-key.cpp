@@ -1,7 +1,7 @@
 // Copyright (C) 2020-2021 Intel Corporation
 // SPDX-License-Identifier: Apache-2.0
 
-#ifdef HEXL_CPU
+// #ifdef HEXL_CPU
 #include "hexl/experimental/seal/ckks-switch-key.hpp"
 
 #include "hexl/experimental/seal/ckks-switch-key-cpu.hpp"
@@ -23,4 +23,4 @@ void KeySwitch(uint64_t* result, const uint64_t* t_target_iter_ptr, uint64_t n,
 
 }  // namespace hexl
 }  // namespace intel
-#endif
+// #endif
