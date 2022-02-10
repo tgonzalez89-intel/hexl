@@ -1,7 +1,7 @@
 // Copyright (C) 2020-2021 Intel Corporation
 // SPDX-License-Identifier: Apache-2.0
 
-#ifdef HEXL_CPU
+// #ifdef HEXL_CPU
 #include "hexl/experimental/seal/ckks-multiply.hpp"
 
 #include "hexl/experimental/seal/ckks-multiply-cpu.hpp"
@@ -18,4 +18,4 @@ void DyadicMultiply(uint64_t* result, const uint64_t* operand1,
 
 }  // namespace hexl
 }  // namespace intel
-#endif
+// #endif
