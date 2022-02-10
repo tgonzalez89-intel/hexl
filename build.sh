@@ -12,7 +12,7 @@ cmake -S . -B build \
 -DHEXL_BENCHMARK=OFF \
 -DHEXL_EXPERIMENTAL=ON \
 -DHEXL_SHARED_LIB=ON \
--DHEXL_FPGA=ON
+-DHEXL_CPU=OFF
 
 cmake --build build -j
-#cmake --install build
+cmake --install build
