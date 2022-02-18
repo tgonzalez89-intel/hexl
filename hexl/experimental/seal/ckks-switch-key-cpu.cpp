@@ -49,9 +49,8 @@ void KeySwitch(uint64_t* result, const uint64_t* t_target_iter_ptr, uint64_t n,
   for (size_t i = 0; i < coeff_count * decomp_modulus_size; i++) {
     js["t_target_iter_ptr"].push_back(t_target_iter_ptr[i]);
   }
-  for (size_t i = 0; i < coeff_count * decomp_modulus_size; i++) {
+  for (size_t i = 0; i < coeff_count * decomp_modulus_size * 2; i++) {
     js["input"].push_back(result[i]);
-    js["input"].push_back(result[i + coeff_count * decomp_modulus_size]);
   }
   for (size_t i = 0; i < key_modulus_size; i++) {
     js["moduli"].push_back(moduli[i]);
@@ -233,10 +232,8 @@ void KeySwitch(uint64_t* result, const uint64_t* t_target_iter_ptr, uint64_t n,
   }
 
 #ifdef HEXL_DUMP_JSON
-  for (size_t i = 0; i < coeff_count * decomp_modulus_size; i++) {
+  for (size_t i = 0; i < coeff_count * decomp_modulus_size * 2; i++) {
     js["expected_output"].push_back(result[i]);
-    js["expected_output"].push_back(
-        result[i + coeff_count * decomp_modulus_size]);
   }
 
   std::ostringstream out_filename;
