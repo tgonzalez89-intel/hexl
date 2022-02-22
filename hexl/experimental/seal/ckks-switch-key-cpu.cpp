@@ -49,7 +49,8 @@ void KeySwitch(uint64_t* result, const uint64_t* t_target_iter_ptr, uint64_t n,
   for (size_t i = 0; i < coeff_count * decomp_modulus_size; i++) {
     js["t_target_iter_ptr"].push_back(t_target_iter_ptr[i]);
   }
-  for (size_t i = 0; i < coeff_count * decomp_modulus_size * 2; i++) {
+  for (size_t i = 0;
+       i < coeff_count * decomp_modulus_size * key_component_count; i++) {
     js["input"].push_back(result[i]);
   }
   for (size_t i = 0; i < key_modulus_size; i++) {
@@ -59,7 +60,8 @@ void KeySwitch(uint64_t* result, const uint64_t* t_target_iter_ptr, uint64_t n,
     js["modswitch_factors"].push_back(modswitch_factors[i]);
   }
   for (size_t i = 0; i < decomp_modulus_size; i++) {
-    for (size_t j = 0; j < 2 * key_modulus_size * coeff_count; j++) {
+    for (size_t j = 0; j < key_modulus_size * coeff_count * key_component_count;
+         j++) {
       js["key_vector"][i].push_back(k_switch_keys[i][j]);
     }
   }
@@ -232,7 +234,8 @@ void KeySwitch(uint64_t* result, const uint64_t* t_target_iter_ptr, uint64_t n,
   }
 
 #ifdef HEXL_DUMP_JSON
-  for (size_t i = 0; i < coeff_count * decomp_modulus_size * 2; i++) {
+  for (size_t i = 0;
+       i < coeff_count * decomp_modulus_size * key_component_count; i++) {
     js["expected_output"].push_back(result[i]);
   }
 
