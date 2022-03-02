@@ -1,7 +1,7 @@
 // Copyright (C) 2020-2021 Intel Corporation
 // SPDX-License-Identifier: Apache-2.0
 
-#include <cstring>
+#include "hexl/experimental/seal/key-switch-internal.hpp"
 
 #include "hexl/eltwise/eltwise-add-mod.hpp"
 #include "hexl/eltwise/eltwise-fma-mod.hpp"
@@ -16,13 +16,14 @@
 
 namespace intel {
 namespace hexl {
+namespace internal {
 
-void CkksSwitchKey(uint64_t* result, const uint64_t* t_target_iter_ptr,
-                   uint64_t n, uint64_t decomp_modulus_size,
-                   uint64_t key_modulus_size, uint64_t rns_modulus_size,
-                   uint64_t key_component_count, uint64_t* moduli,
-                   const uint64_t** k_switch_keys,
-                   uint64_t* modswitch_factors) {
+void KeySwitch(uint64_t* result, const uint64_t* t_target_iter_ptr, uint64_t n,
+               uint64_t decomp_modulus_size, uint64_t key_modulus_size,
+               uint64_t rns_modulus_size, uint64_t key_component_count,
+               const uint64_t* moduli, const uint64_t** k_switch_keys,
+               const uint64_t* modswitch_factors,
+               const uint64_t* root_of_unity_powers_ptr) {
   uint64_t coeff_count = n;
 
   // Create a copy of target_iter
@@ -193,5 +194,6 @@ void CkksSwitchKey(uint64_t* result, const uint64_t* t_target_iter_ptr,
   return;
 }
 
+}  // namespace internal
 }  // namespace hexl
 }  // namespace intel
