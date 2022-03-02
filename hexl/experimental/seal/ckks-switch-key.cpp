@@ -1,7 +1,7 @@
 // Copyright (C) 2020-2021 Intel Corporation
 // SPDX-License-Identifier: Apache-2.0
 
-#ifdef HEXL_CPU
+#ifndef HEXL_FPGA_COMPAT
 #include "hexl/experimental/seal/ckks-switch-key.hpp"
 
 #include "hexl/experimental/seal/ckks-switch-key-cpu.hpp"

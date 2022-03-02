@@ -11,8 +11,7 @@ cmake -S . -B build \
 -DHEXL_BENCHMARK=ON \
 -DHEXL_EXPERIMENTAL=ON \
 -DHEXL_SHARED_LIB=OFF \
--DHEXL_CPU=ON \
--DHEXL_DUMP_JSON=OFF
+-DHEXL_FPGA_COMPAT=OFF
 
 cmake --build build -j
 #cmake --install build

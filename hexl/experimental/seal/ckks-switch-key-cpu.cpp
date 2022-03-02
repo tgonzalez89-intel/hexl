@@ -3,11 +3,6 @@
 
 #include "hexl/experimental/seal/ckks-switch-key-cpu.hpp"
 
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
-
 #include "hexl/eltwise/eltwise-add-mod.hpp"
 #include "hexl/eltwise/eltwise-fma-mod.hpp"
 #include "hexl/eltwise/eltwise-mult-mod.hpp"
@@ -17,7 +12,6 @@
 #include "hexl/number-theory/number-theory.hpp"
 #include "hexl/util/aligned-allocator.hpp"
 #include "hexl/util/check.hpp"
-#include "json.hh"
 #include "util/cpu-features.hpp"
 
 namespace intel {
@@ -35,37 +29,8 @@ void KeySwitch(uint64_t* result, const uint64_t* t_target_iter_ptr, uint64_t n,
                  "supported yet.\n";
     assert(root_of_unity_powers_ptr == nullptr);
   }
+
   uint64_t coeff_count = n;
-
-#ifdef HEXL_DUMP_JSON
-  static int dump_flag = 0;
-
-  nlohmann::json js;
-  js["coeff_count"] = coeff_count;
-  js["decomp_modulus_size"] = decomp_modulus_size;
-  js["key_modulus_size"] = key_modulus_size;
-  js["rns_modulus_size"] = rns_modulus_size;
-  js["key_component_count"] = key_component_count;
-  for (size_t i = 0; i < coeff_count * decomp_modulus_size; i++) {
-    js["t_target_iter_ptr"].push_back(t_target_iter_ptr[i]);
-  }
-  for (size_t i = 0;
-       i < coeff_count * decomp_modulus_size * key_component_count; i++) {
-    js["input"].push_back(result[i]);
-  }
-  for (size_t i = 0; i < key_modulus_size; i++) {
-    js["moduli"].push_back(moduli[i]);
-  }
-  for (size_t i = 0; i < key_modulus_size; i++) {
-    js["modswitch_factors"].push_back(modswitch_factors[i]);
-  }
-  for (size_t i = 0; i < decomp_modulus_size; i++) {
-    for (size_t j = 0; j < key_modulus_size * coeff_count * key_component_count;
-         j++) {
-      js["key_vector"][i].push_back(k_switch_keys[i][j]);
-    }
-  }
-#endif
 
   // Create a copy of target_iter
   std::vector<uint64_t> t_target(coeff_count * decomp_modulus_size, 0);
@@ -232,25 +197,6 @@ void KeySwitch(uint64_t* result, const uint64_t* t_target_iter_ptr, uint64_t n,
                                  moduli[i]);
     }
   }
-
-#ifdef HEXL_DUMP_JSON
-  for (size_t i = 0;
-       i < coeff_count * decomp_modulus_size * key_component_count; i++) {
-    js["expected_output"].push_back(result[i]);
-  }
-
-  std::ostringstream out_filename;
-  out_filename << coeff_count << "_";
-  out_filename << decomp_modulus_size << "_";
-  out_filename << key_modulus_size << "_";
-  out_filename << rns_modulus_size << "_";
-  out_filename << key_component_count << "_" << dump_flag << ".json";
-  printf("Saving to %s\n", out_filename.str().c_str());
-  std::ofstream o(out_filename.str());
-  o << std::setw(4) << js << std::endl;
-
-  dump_flag++;
-#endif
 
   return;
 }
