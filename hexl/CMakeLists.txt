@@ -19,6 +19,8 @@ if (HEXL_EXPERIMENTAL)
     list(APPEND NATIVE_SRC
         experimental/seal/dyadic-multiply.cpp
         experimental/seal/key-switch.cpp
+        experimental/seal/dyadic-multiply-internal.cpp
+        experimental/seal/key-switch-internal.cpp
         experimental/misc/lr-mat-vec-mult.cpp
     )
 endif()
