@@ -7,6 +7,7 @@
 
 namespace intel {
 namespace hexl {
+namespace cpu {
 
 /// @brief Computes CKKS multiplication
 /// @param[in,out] result Ciphertext data. Will be over-written with result. Has
@@ -23,5 +24,6 @@ void DyadicMultiply(uint64_t* result, const uint64_t* operand1,
                     const uint64_t* operand2, uint64_t n,
                     const uint64_t* moduli, uint64_t num_moduli);
 
+}  // namespace cpu
 }  // namespace hexl
 }  // namespace intel

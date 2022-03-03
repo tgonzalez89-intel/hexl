@@ -7,6 +7,7 @@
 
 namespace intel {
 namespace hexl {
+namespace cpu {
 
 /// @brief Computes CKKS key switching in-place
 /// @param[in,out] result Ciphertext data. Will be over-written with result. Has
@@ -35,5 +36,6 @@ void KeySwitch(uint64_t* result, const uint64_t* t_target_iter_ptr, uint64_t n,
                const uint64_t* modswitch_factors,
                const uint64_t* root_of_unity_powers_ptr = nullptr);
 
+}  // namespace cpu
 }  // namespace hexl
 }  // namespace intel
